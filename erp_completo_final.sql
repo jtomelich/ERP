@@ -1,4 +1,13 @@
 
+/* credenciales
+host Name: ep-blue-frog-ad3xhlvv-pooler.c-2.us-east-1.aws.neon.tech
+User: neondb_owner
+Base de datos: ERPTomelich
+password:npg_sV3NcRMb7XwO
+
+psql 'postgresql://neondb_owner:npg_sV3NcRMb7XwO@ep-blue-frog-ad3xhlvv-pooler.c-2.us-east-1.aws.neon.tech/ERPTomelich?sslmode=require&channel_binding=require'
+*/
+
 -- Tabla de roles
 CREATE TABLE Rol (
     id SERIAL PRIMARY KEY,
