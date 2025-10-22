@@ -1,0 +1,290 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model codigobarra {
+  id           Int            @id @default(autoincrement())
+  producto_id  Int?
+  codigo       String         @unique @db.VarChar(100)
+  producto     producto?      @relation(fields: [producto_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  detalleventa detalleventa[]
+  lote         lote[]
+}
+
+model compra {
+  id                Int                 @id @default(autoincrement())
+  proveedor_id      Int?
+  fecha             DateTime            @db.Date
+  total             Decimal             @db.Decimal(10, 2)
+  proveedor         proveedor?          @relation(fields: [proveedor_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  detallecompra     detallecompra[]
+  ordencompracompra ordencompracompra[]
+}
+
+model cuentafinanciera {
+  id                    Int                     @id @default(autoincrement())
+  nombre                String                  @db.VarChar(255)
+  tipo_id               Int?
+  saldo                 Decimal?                @default(0) @db.Decimal(12, 2)
+  tipocuenta            tipocuenta?             @relation(fields: [tipo_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  transaccionfinanciera transaccionfinanciera[]
+}
+
+model detallecompra {
+  id              Int     @id @default(autoincrement())
+  compra_id       Int?
+  lote_id         Int?
+  cantidad        Int
+  precio_unitario Decimal @db.Decimal(10, 2)
+  compra          compra? @relation(fields: [compra_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  lote            lote?   @relation(fields: [lote_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model detalleordencompra {
+  id                  Int          @id @default(autoincrement())
+  orden_id            Int?
+  producto_id         Int?
+  cantidad_solicitada Int
+  precio_estimado     Decimal?     @db.Decimal(10, 2)
+  ordencompra         ordencompra? @relation(fields: [orden_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  producto            producto?    @relation(fields: [producto_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model detalleventa {
+  id              Int              @id @default(autoincrement())
+  venta_id        Int?
+  codigo_barra_id Int?
+  producto_id     Int?
+  tipo_venta_id   Int?
+  tipo_lista_id   Int?
+  cantidad        Int
+  precio_unitario Decimal          @db.Decimal(10, 2)
+  codigobarra     codigobarra?     @relation(fields: [codigo_barra_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  producto        producto?        @relation(fields: [producto_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  tipolistaprecio tipolistaprecio? @relation(fields: [tipo_lista_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  tipoventa       tipoventa?       @relation(fields: [tipo_venta_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  venta           venta?           @relation(fields: [venta_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model estadoordencompra {
+  id          Int           @id @default(autoincrement())
+  nombre      String        @unique @db.VarChar(50)
+  ordencompra ordencompra[]
+}
+
+model estadoproduccion {
+  id              Int               @id @default(autoincrement())
+  nombre          String            @unique @db.VarChar(50)
+  ordenproduccion ordenproduccion[]
+}
+
+model estadoventa {
+  id     Int     @id @default(autoincrement())
+  nombre String  @unique @db.VarChar(50)
+  venta  venta[]
+}
+
+model insumoproduccion {
+  id              Int              @id @default(autoincrement())
+  orden_id        Int?
+  producto_id     Int?
+  cantidad        Int
+  ordenproduccion ordenproduccion? @relation(fields: [orden_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  producto        producto?        @relation(fields: [producto_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model listaprecio {
+  id              Int              @id @default(autoincrement())
+  producto_id     Int?
+  sucursal_id     Int?
+  tipo_lista_id   Int?
+  precio          Decimal          @db.Decimal(10, 2)
+  producto        producto?        @relation(fields: [producto_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  sucursal        sucursal?        @relation(fields: [sucursal_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  tipolistaprecio tipolistaprecio? @relation(fields: [tipo_lista_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model lote {
+  id                Int                 @id @default(autoincrement())
+  codigo_barra_id   Int?
+  fecha_vencimiento DateTime?           @db.Date
+  cantidad          Int
+  ubicacion         String?             @db.VarChar(100)
+  detallecompra     detallecompra[]
+  codigobarra       codigobarra?        @relation(fields: [codigo_barra_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  productoterminado productoterminado[]
+}
+
+model ordencompra {
+  id                 Int                  @id @default(autoincrement())
+  proveedor_id       Int?
+  fecha              DateTime             @db.Date
+  estado_id          Int?
+  observaciones      String?
+  detalleordencompra detalleordencompra[]
+  estadoordencompra  estadoordencompra?   @relation(fields: [estado_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  proveedor          proveedor?           @relation(fields: [proveedor_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  ordencompracompra  ordencompracompra[]
+}
+
+model ordencompracompra {
+  id          Int          @id @default(autoincrement())
+  orden_id    Int?
+  compra_id   Int?
+  compra      compra?      @relation(fields: [compra_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  ordencompra ordencompra? @relation(fields: [orden_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model ordenproduccion {
+  id                Int                 @id @default(autoincrement())
+  producto_id       Int?
+  fecha_inicio      DateTime            @db.Date
+  fecha_fin         DateTime?           @db.Date
+  estado_id         Int?
+  insumoproduccion  insumoproduccion[]
+  estadoproduccion  estadoproduccion?   @relation(fields: [estado_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  producto          producto?           @relation(fields: [producto_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  productoterminado productoterminado[]
+}
+
+model permiso {
+  id             Int      @id @default(autoincrement())
+  rol_id         Int?
+  screen_id      Int?
+  puede_ver      Boolean? @default(true)
+  puede_crear    Boolean? @default(false)
+  puede_editar   Boolean? @default(false)
+  puede_eliminar Boolean? @default(false)
+  rol            rol?     @relation(fields: [rol_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  screen         screen?  @relation(fields: [screen_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model producto {
+  id                                                Int                  @id @default(autoincrement())
+  nombre                                            String               @db.VarChar(255)
+  descripcion                                       String?
+  es_combo                                          Boolean?             @default(false)
+  stock_minimo                                      Int?                 @default(0)
+  codigobarra                                       codigobarra[]
+  detalleordencompra                                detalleordencompra[]
+  detalleventa                                      detalleventa[]
+  insumoproduccion                                  insumoproduccion[]
+  listaprecio                                       listaprecio[]
+  ordenproduccion                                   ordenproduccion[]
+  productocombo_productocombo_combo_idToproducto    productocombo[]      @relation("productocombo_combo_idToproducto")
+  productocombo_productocombo_producto_idToproducto productocombo[]      @relation("productocombo_producto_idToproducto")
+}
+
+model productocombo {
+  id                                           Int       @id @default(autoincrement())
+  combo_id                                     Int?
+  producto_id                                  Int?
+  cantidad                                     Int
+  producto_productocombo_combo_idToproducto    producto? @relation("productocombo_combo_idToproducto", fields: [combo_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  producto_productocombo_producto_idToproducto producto? @relation("productocombo_producto_idToproducto", fields: [producto_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model productoterminado {
+  id              Int              @id @default(autoincrement())
+  orden_id        Int?
+  lote_id         Int?
+  cantidad        Int
+  lote            lote?            @relation(fields: [lote_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  ordenproduccion ordenproduccion? @relation(fields: [orden_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model proveedor {
+  id          Int           @id @default(autoincrement())
+  nombre      String        @db.VarChar(255)
+  nit         String        @unique @db.VarChar(50)
+  contacto    String?       @db.VarChar(150)
+  telefono    String?       @db.VarChar(50)
+  correo      String?       @db.VarChar(150)
+  direccion   String?
+  tipo        String?       @default("nacional") @db.VarChar(50)
+  compra      compra[]
+  ordencompra ordencompra[]
+}
+
+model rol {
+  id      Int       @id @default(autoincrement())
+  nombre  String    @unique @db.VarChar(50)
+  permiso permiso[]
+  usuario usuario[]
+}
+
+model screen {
+  id          Int       @id @default(autoincrement())
+  nombre      String    @unique @db.VarChar(100)
+  descripcion String?
+  permiso     permiso[]
+}
+
+model sucursal {
+  id          Int           @id @default(autoincrement())
+  nombre      String        @db.VarChar(100)
+  direccion   String?
+  listaprecio listaprecio[]
+}
+
+model tipocuenta {
+  id               Int                @id @default(autoincrement())
+  nombre           String             @unique @db.VarChar(50)
+  cuentafinanciera cuentafinanciera[]
+}
+
+model tipolistaprecio {
+  id           Int            @id @default(autoincrement())
+  nombre       String         @unique @db.VarChar(50)
+  detalleventa detalleventa[]
+  listaprecio  listaprecio[]
+}
+
+model tipotransaccion {
+  id                    Int                     @id @default(autoincrement())
+  nombre                String                  @unique @db.VarChar(50)
+  transaccionfinanciera transaccionfinanciera[]
+}
+
+model tipoventa {
+  id           Int            @id @default(autoincrement())
+  nombre       String         @unique @db.VarChar(50)
+  detalleventa detalleventa[]
+}
+
+model transaccionfinanciera {
+  id               Int               @id @default(autoincrement())
+  cuenta_id        Int?
+  fecha            DateTime          @db.Date
+  tipo_id          Int?
+  monto            Decimal           @db.Decimal(12, 2)
+  descripcion      String?
+  cuentafinanciera cuentafinanciera? @relation(fields: [cuenta_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  tipotransaccion  tipotransaccion?  @relation(fields: [tipo_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model usuario {
+  id         Int     @id @default(autoincrement())
+  nombre     String  @db.VarChar(100)
+  correo     String  @unique @db.VarChar(150)
+  contrasena String  @db.VarChar(255)
+  rol_id     Int?
+  rol        rol?    @relation(fields: [rol_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  venta      venta[]
+}
+
+model venta {
+  id           Int            @id @default(autoincrement())
+  usuario_id   Int?
+  fecha        DateTime       @db.Date
+  estado_id    Int?
+  total        Decimal        @db.Decimal(10, 2)
+  detalleventa detalleventa[]
+  estadoventa  estadoventa?   @relation(fields: [estado_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  usuario      usuario?       @relation(fields: [usuario_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
