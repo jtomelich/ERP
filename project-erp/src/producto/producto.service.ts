@@ -1,4 +1,3 @@
-
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 import { ProductoDto } from 'src/dto/producto.dto';
@@ -25,6 +24,37 @@ export class ProductoService {
             throw error;
         }
     }
+
+    //Metodo para traer 1 dato
+    async getDato(id:any){
+        try{
+            let dato = await this.prisma.producto.findFirst({
+                where: {id:id}
+            });
+
+            if(!dato){
+                throw new HttpException({
+                    estado: HttpStatus.BAD_REQUEST,
+                    mensaje: 'No se encontro'
+                }, HttpStatus.BAD_REQUEST,
+            {
+                cause:{
+                    name:"",
+                    message:""
+                }
+            });
+            }
+            else{
+                return dato;
+            }
+        }
+        catch(error){
+            console.error('Error al obtener la informacion: ',error);
+            throw error;
+        }
+    }
+
+
 
     //Metodo para agregar
     async addDatos(dto: ProductoDto){
@@ -64,5 +94,49 @@ export class ProductoService {
         }
     }
 
+    //editar
+    async updateDatos(id:any, dto:ProductoDto){
+        try{
+            //verifica si exite
+            let existing = await this.prisma.producto.findFirst({
+                where: {id: id}
+            });
+
+            //en caso de no existir
+            if(!existing){
+                throw new HttpException(
+                    {
+                        estado: HttpStatus.BAD_REQUEST,
+                        mensaje: 'No se puede actualizar'
+                    },
+                    HttpStatus.BAD_REQUEST
+                );
+            }
+
+            //Actualizar
+            await this.prisma.producto.update({
+                where: {id: id},
+                data: {
+                    nombre: dto.nombre,
+                    descripcion: dto.descripcion,
+                    stock_minimo: dto.stock_minimo,
+                    es_combo: dto.es_combo 
+                }
+            });
+        }
+        catch(error){
+            console.error('Error al actualizar: ',error);
+            throw new HttpException(
+                {
+                    estado: HttpStatus.INTERNAL_SERVER_ERROR,
+                    mensaje: 'Error al actualizar'
+                },
+                HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
     
+
+
 }

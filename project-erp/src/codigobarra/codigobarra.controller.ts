@@ -1,5 +1,6 @@
+import { CodigobarraDto } from 'src/dto/codigobarra.dto';
 import { CodigobarraService } from './codigobarra.service';
-import { Controller, Get, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller,Get,HttpCode,HttpStatus, Post, Body, Param, Put } from '@nestjs/common';
 
 @Controller('codigobarra')
 export class CodigobarraController {
@@ -14,4 +15,29 @@ export class CodigobarraController {
     {
         return this.CodigobarraService.getDatos();
     }
+
+    //traer 1 dato
+    @Get(':id')
+    @HttpCode(HttpStatus.OK)
+    show(@Param() params)
+    {
+        return this.CodigobarraService.getDato(parseInt(params.id));
+    }
+
+    //crear
+    @Post()
+    @HttpCode(HttpStatus.CREATED)
+    create(@Body() dto:CodigobarraDto){
+        return this.CodigobarraService.addDatos(dto);
+    }
+    
+    //Modificar
+    @Put(':id')
+    @HttpCode(HttpStatus.OK)
+    update(@Param() Params, @Body() dto: CodigobarraDto){
+        return this.CodigobarraService.updateDatos(parseInt(Params.id), dto);
+    }
+
+
+
 }
