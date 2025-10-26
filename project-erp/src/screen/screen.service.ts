@@ -1,22 +1,21 @@
 
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
-import { DetalleventaDto } from 'src/dto/detalleventa.dto';
+import { ScreenDto } from 'src/dto/screen.dto';
 
 @Injectable()
-export class DetalleVentaService {
-
-    //uso prisma
-    private prisma:any;
-    constructor()
-    {
-        this.prisma=new PrismaClient();
-    }
-
-    //Metodo para obtener todo
+export class ScreenService {
+    //uso de prisma
+        private prisma:any;
+        constructor()
+        {
+            this.prisma=new PrismaClient();
+        }
+    
+        //Metodo para obtener todo
         async getDatos(){
             try{
-                return await this.prisma.detalleventa.findMany({
+                return await this.prisma.screen.findMany({
                     orderBy:[{id:'asc'}],
                 });
             }
@@ -29,7 +28,7 @@ export class DetalleVentaService {
         //Metodo para traer 1 dato
         async getDato(id:any){
             try{
-                let dato = await this.prisma.detalleventa.findFirst({
+                let dato = await this.prisma.screen.findFirst({
                     where: {id:id}
                 });
     
@@ -58,18 +57,26 @@ export class DetalleVentaService {
     
     
         //Metodo para agregar
-        async addDatos(dto: DetalleventaDto){
+        async addDatos(dto: ScreenDto){
             try{
-                
-                await this.prisma.detalleventa.create({
+                //Validar si existe
+                let existing = await this.prisma.screen.findFirst({
+                    where: {nombre: dto.nombre}
+                });
+    
+                //en caso de que exista
+                if(existing)
+                {
+                    throw new HttpException({
+                        estado: HttpStatus.BAD_REQUEST,
+                        menaje: 'Ya existe'
+                    },HttpStatus.BAD_REQUEST);
+                }
+    
+                await this.prisma.screen.create({
                     data:{
-                        venta_id: dto.venta_id,
-                        codigo_barra_id: dto.codigo_barra_id,
-                        producto_id: dto.producto_id,
-                        tipo_venta_id: dto.tipo_venta_id,
-                        tipo_lista_id: dto.tipo_lista_id,
-                        cantidad: dto.cantidad,
-                        precio_unitario: dto.precio_unitario
+                        nombre: dto.nombre,
+                        descripcion: dto.descripcion
                     }
                 });
     
@@ -86,10 +93,10 @@ export class DetalleVentaService {
         }
     
         //editar
-        async updateDatos(id:any, dto:DetalleventaDto){
+        async updateDatos(id:any, dto:ScreenDto){
             try{
                 //verifica si exite
-                let existing = await this.prisma.detalleventa.findFirst({
+                let existing = await this.prisma.screen.findFirst({
                     where: {id: id}
                 });
     
@@ -105,16 +112,11 @@ export class DetalleVentaService {
                 }
     
                 //Actualizar
-                await this.prisma.detalleventa.update({
+                await this.prisma.screen.update({
                     where: {id: id},
                     data: {
-                        venta_id: dto.venta_id,
-                        codigo_barra_id: dto.codigo_barra_id,
-                        producto_id: dto.producto_id,
-                        tipo_venta_id: dto.tipo_venta_id,
-                        tipo_lista_id: dto.tipo_lista_id,
-                        cantidad: dto.cantidad,
-                        precio_unitario: dto.precio_unitario
+                        nombre: dto.nombre,
+                        descripcion: dto.descripcion
                     }
                 });
             }
@@ -129,6 +131,4 @@ export class DetalleVentaService {
                 );
             }
         }
-
-
 }

@@ -1,22 +1,21 @@
 
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
-import { DetalleventaDto } from 'src/dto/detalleventa.dto';
+import { OrdenproduccionDto } from 'src/dto/ordenproduccion.dto';
 
 @Injectable()
-export class DetalleVentaService {
-
-    //uso prisma
-    private prisma:any;
-    constructor()
-    {
-        this.prisma=new PrismaClient();
-    }
-
-    //Metodo para obtener todo
+export class OrdenProduccionService {
+    //uso de prisma
+        private prisma:any;
+        constructor()
+        {
+            this.prisma=new PrismaClient();
+        }
+    
+        //Metodo para obtener todo
         async getDatos(){
             try{
-                return await this.prisma.detalleventa.findMany({
+                return await this.prisma.ordenproduccion.findMany({
                     orderBy:[{id:'asc'}],
                 });
             }
@@ -29,7 +28,7 @@ export class DetalleVentaService {
         //Metodo para traer 1 dato
         async getDato(id:any){
             try{
-                let dato = await this.prisma.detalleventa.findFirst({
+                let dato = await this.prisma.ordenproduccion.findFirst({
                     where: {id:id}
                 });
     
@@ -58,18 +57,15 @@ export class DetalleVentaService {
     
     
         //Metodo para agregar
-        async addDatos(dto: DetalleventaDto){
+        async addDatos(dto: OrdenproduccionDto){
             try{
                 
-                await this.prisma.detalleventa.create({
+                await this.prisma.ordenproduccion.create({
                     data:{
-                        venta_id: dto.venta_id,
-                        codigo_barra_id: dto.codigo_barra_id,
                         producto_id: dto.producto_id,
-                        tipo_venta_id: dto.tipo_venta_id,
-                        tipo_lista_id: dto.tipo_lista_id,
-                        cantidad: dto.cantidad,
-                        precio_unitario: dto.precio_unitario
+                        fecha_inicio: dto.fecha_inicio,
+                        fecha_fin: dto.fecha_fin,
+                        estado_id: dto.estado_id
                     }
                 });
     
@@ -86,10 +82,10 @@ export class DetalleVentaService {
         }
     
         //editar
-        async updateDatos(id:any, dto:DetalleventaDto){
+        async updateDatos(id:any, dto:OrdenproduccionDto){
             try{
                 //verifica si exite
-                let existing = await this.prisma.detalleventa.findFirst({
+                let existing = await this.prisma.ordenproduccion.findFirst({
                     where: {id: id}
                 });
     
@@ -105,16 +101,13 @@ export class DetalleVentaService {
                 }
     
                 //Actualizar
-                await this.prisma.detalleventa.update({
+                await this.prisma.ordenproduccion.update({
                     where: {id: id},
                     data: {
-                        venta_id: dto.venta_id,
-                        codigo_barra_id: dto.codigo_barra_id,
                         producto_id: dto.producto_id,
-                        tipo_venta_id: dto.tipo_venta_id,
-                        tipo_lista_id: dto.tipo_lista_id,
-                        cantidad: dto.cantidad,
-                        precio_unitario: dto.precio_unitario
+                        fecha_inicio: dto.fecha_inicio,
+                        fecha_fin: dto.fecha_fin,
+                        estado_id: dto.estado_id
                     }
                 });
             }
@@ -129,6 +122,4 @@ export class DetalleVentaService {
                 );
             }
         }
-
-
 }
