@@ -23,9 +23,17 @@ import { ProductoTerminadoModule } from './producto-terminado/producto-terminado
 import { ProveedorModule } from './proveedor/proveedor.module';
 import { RolModule } from './rol/rol.module';
 import { ScreenModule } from './screen/screen.module';
+import { SucursalModule } from './sucursal/sucursal.module';
+import { TipoCuentaModule } from './tipo-cuenta/tipo-cuenta.module';
+import { TipoListaPrecioModule } from './tipo-lista-precio/tipo-lista-precio.module';
+import { TipoTransaccionModule } from './tipo-transaccion/tipo-transaccion.module';
+import { TipoVentaModule } from './tipo-venta/tipo-venta.module';
+import { TransaccionFinancieraModule } from './transaccion-financiera/transaccion-financiera.module';
+import { UsuarioModule } from './usuario/usuario.module';
+import { VentaModule } from './venta/venta.module';
 
 @Module({
-  imports: [CodigobarraModule, ProductoModule, CompraModule, CuentaFinancieraModule, DetalleCompraModule, DetalleOrdenCompraModule, DetalleVentaModule, EstadoOrdenCompraModule, EstadoProduccionModule, EstadoVentaModule, InsumoProduccionModule, ListaPrecioModule, LoteModule, OrdenCompraModule, OrdenCompraCompraModule, OrdenProduccionModule, PermisoModule, ProductoComboModule, ProductoTerminadoModule, ProveedorModule, RolModule, ScreenModule],
+  imports: [CodigobarraModule, ProductoModule, CompraModule, CuentaFinancieraModule, DetalleCompraModule, DetalleOrdenCompraModule, DetalleVentaModule, EstadoOrdenCompraModule, EstadoProduccionModule, EstadoVentaModule, InsumoProduccionModule, ListaPrecioModule, LoteModule, OrdenCompraModule, OrdenCompraCompraModule, OrdenProduccionModule, PermisoModule, ProductoComboModule, ProductoTerminadoModule, ProveedorModule, RolModule, ScreenModule, SucursalModule, TipoCuentaModule, TipoListaPrecioModule, TipoTransaccionModule, TipoVentaModule, TransaccionFinancieraModule, UsuarioModule, VentaModule],
   controllers: [AppController],
   providers: [AppService],
 })
